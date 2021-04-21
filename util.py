@@ -18,15 +18,16 @@ def softmax(data):
 
 
 class MinMax_transformer:
-    def fit_transfrom(self, data):
-        self.min = np.min(data)
-        self.max = np.max(data)
+    def fit_transform(self, data):
+        self.min = np.min(data, axis=0)
+        self.max = np.max(data, axis=0)
         return (data - self.min) / (self.max - self.min)
-    def transfrom(self, data):
+    def transform(self, data):
         return (data - self.min) / (self.max - self.min)
     def fit(self, data):
-        self.min = np.min(data)
-        self.max = np.max(data)
+        self.min = np.min(data, axis=0)
+        self.max = np.max(data, axis=0)
+        return self
 
 class Standardisation(object):
   def fit_transform(self, data):
@@ -38,3 +39,5 @@ class Standardisation(object):
   def fit(self, data):
     self.mean = np.mean(data)
     self.std = np.std(data)
+    return self
+

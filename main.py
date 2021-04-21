@@ -1,6 +1,9 @@
 import numpy as np
 import mlp
 import pickle
+import util
+
+
 np.random.seed(5329)
 
 train_data = np.load("./Assignment1-Dataset/train_data.npy")
@@ -14,12 +17,24 @@ nn = mlp.MLP([n_features, 128, 128, n_class],
              [None, 'leaky_relu', 'leaky_relu',  None],
              dropout=0,
              bn=False)
+# Standardisation normalizer
+# standard_transformer = util.Standardisation()
+# data_train = standard_transformer.fit_transform(train_data)
+# data_test = standard_transformer.transform(test_data)
 
-input_data = train_data
-output_data = train_label
+# min_max normalizer
+# min_max_transformer = util.MinMax_transformer()
+# data_train = min_max_scaler.fit_transform(train_data)
+# data_test = min_max_scaler.transform(test_data)
 
-model = nn.fit(input_data,
-               output_data,
+# without normalizer
+data_train = train_data
+data_test = test_data
+label_train = train_label
+label_test = test_label
+
+model = nn.fit(data_train,
+               label_train,
                learning_rate=0.001,
                epochs=30,
                batch_size=16,
