@@ -62,7 +62,7 @@ class MLP:
             layer.W -= lr * layer.grad_W
             layer.b -= lr * layer.grad_b
             # update BN param
-            if self.bn:
+            if layer.bn and not layer.isOutputLayer:
                 layer.bn_param['gamma'] = layer.bn_param['gamma'] - lr * layer.bn_param['dgamma']
                 layer.bn_param['beta'] = layer.bn_param['beta'] - lr * layer.bn_param['dbeta']
 
