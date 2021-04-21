@@ -17,18 +17,18 @@ class Linear(object):
 
         # initialize parameters
         # kaiming init (for relu)
-        # self.W = np.random.normal(
-        #     loc=0,
-        #     scale=2 / self.n_in,
-        #     size=(self.n_in, self.n_out)
-        # )
+        self.W = np.random.normal(
+            loc=0,
+            scale=2 / self.n_in,
+            size=(self.n_in, self.n_out)
+        )
 
         # # random initiallization
-        self.W = np.random.uniform(
-            low=-np.sqrt(6. / (n_in + n_out)),
-            high=np.sqrt(6. / (n_in + n_out)),
-            size=(n_in, n_out)
-        )
+        # self.W = np.random.uniform(
+        #     low=-np.sqrt(6. / (n_in + n_out)),
+        #     high=np.sqrt(6. / (n_in + n_out)),
+        #     size=(n_in, n_out)
+        # )
 
         self.b = np.zeros(shape=(self.n_out,))
 
