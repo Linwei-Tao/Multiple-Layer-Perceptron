@@ -151,8 +151,7 @@ class MLP:
 
     # backward progress
     def backward(self, delta):
-        delta = self.layers[-1].backward(delta, output_layer=True)
-        for layer in reversed(self.layers[:-1]):
+        for layer in reversed(self.layers):
             delta = layer.backward(delta)
 
     # update the network weights after backward.

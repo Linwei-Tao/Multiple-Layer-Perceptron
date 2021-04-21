@@ -27,3 +27,14 @@ class MinMax_transformer:
     def fit(self, data):
         self.min = np.min(data)
         self.max = np.max(data)
+
+class Standardisation(object):
+  def fit_transform(self, data):
+    self.mean = np.mean(data)
+    self.std = np.std(data)
+    return (data - data.mean(axis=0, keepdims=True)) / data.std(axis=0, keepdims=True)
+  def transform(self, data):
+    return (data - data.mean(axis=0, keepdims=True)) / data.std(axis=0, keepdims=True)
+  def fit(self, data):
+    self.mean = np.mean(data)
+    self.std = np.std(data)
