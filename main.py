@@ -10,7 +10,7 @@ test_data = np.load("./Assignment1-Dataset/test_data.npy")
 
 n_class = np.unique(train_label).shape[0]
 n_features = train_data.shape[1]
-nn = mlp.MLP([n_features, 64, 32, n_class],
+nn = mlp.MLP([n_features, 128, 128, n_class],
              [None, 'relu', 'relu',  None],
              dropout=0,
              bn=False)
@@ -22,7 +22,7 @@ model = nn.fit(input_data,
                output_data,
                learning_rate=0.001,
                epochs=30,
-               batch_size=1,
+               batch_size=16,
                train_test_spit=0.8)
 
 model.eval()
