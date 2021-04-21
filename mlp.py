@@ -41,6 +41,28 @@ class MLP:
         for layer in reversed(self.layers):
             delta = layer.backward(delta)
 
+    def update_rmsprop(self, lr, rho=0.999, epsi=10e-05):
+        # self.r_w = np.zeros(self.W.shape)    # initialise r for w and b
+        # self.r_b = np.zeros(self.b.shape)
+
+        for layer in self.layers:
+            layer.r_w = rho * layer.r_w + (1 - rho) * layer.grad_W * layer.grad_W
+            layer.W = layer.W - (lr / (np.sqrt(layer.r_w) + epsi) * layer.grad_W)  # update weight
+
+            weight_decay: float = 0.00005  # 1e-5                                                    # weight decay
+            layer.W = layer.W - layer.W * weight_decay
+
+            layer.r_b = rho * layer.r_b + (1 - rho) * layer.grad_b * layer.grad_b
+            layer.b = layer.b - (lr / (np.sqrt(layer.r_b) + epsi) * layer.grad_b)  # update bias
+
+            layer.grad_W = np.zeros_like(layer.grad_W)
+            layer.grad_b = np.zeros_like(layer.grad_b)
+
+            # update BN param
+            if self.bn:
+                layer.bn_param['gamma'] = layer.bn_param['gamma'] - lr * layer.bn_param['dgamma']
+                layer.bn_param['beta'] = layer.bn_param['beta'] - lr * layer.bn_param['beta']
+
     def update_momentum(self, lr, momentum=0.9):
         for layer in self.layers:
             # weight_decay: float = 1e-5
@@ -125,7 +147,8 @@ class MLP:
 
                 # update
                 # self.update_momentum(learning_rate, momentum=0.9)
-                self.update(learning_rate)
+                # self.update(learning_rate)
+                self.update_rmsprop(learning_rate)
 
                 # Epoch loss sum
                 loss_sum += loss.sum()

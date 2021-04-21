@@ -40,6 +40,10 @@ class Linear(object):
         self.V_w = np.zeros(self.W.shape)
         self.V_b = np.zeros(self.b.shape)
 
+        # rmsprop parameters
+        self.r_w = np.zeros(self.W.shape)    # initialise r for w and b
+        self.r_b = np.zeros(self.b.shape)
+
         # batch normalization init
         self.bn_cache = {}
         self.bn_eval = {"running_mean": np.zeros(n_out),
