@@ -129,10 +129,10 @@ class MLP:
             X_val = np.array(X[int(n_data * train_test_spit):])
             y_val = np.array(y[int(n_data * train_test_spit):])
             # shuffle the training set to make each epoch's batch different
-            # shuffle = np.arange(X_train.shape[0])
-            # np.random.shuffle(shuffle)
-            # X_train = X_train[shuffle]
-            # y_train = y_train[shuffle]
+            shuffle = np.arange(X_train.shape[0])
+            np.random.shuffle(shuffle)
+            X_train = X_train[shuffle]
+            y_train = y_train[shuffle]
 
             loss_sum = 0  # the loss summation for this epoch
             for batch_start_ind in range(0, X_train.shape[0], batch_size):
