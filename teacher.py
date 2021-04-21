@@ -35,6 +35,10 @@ class Activation(object):
             self.name = 'relu'
             self.f = self.__relu
             self.f_deriv = self.__relu_deriv
+        elif activation == None:
+            self.name = None
+            self.f = None
+            self.f_deriv = None
 
 
 # now we define the hidden layer for the mlp
@@ -65,7 +69,6 @@ class HiddenLayer(object):
         """
         self.input = None
         self.activation = Activation(activation).f
-
         # activation deriv of last layer
         self.activation_deriv = None
         if activation_last_layer:
@@ -184,13 +187,13 @@ class MLP:
         for k in range(epochs):
             loss = np.zeros(X.shape[0])
             for it in range(X.shape[0]):
-                i = np.random.randint(X.shape[0])
+                # i = np.random.randint(X.shape[0])
 
                 # forward pass
-                y_hat = self.forward(X[i])
+                y_hat = self.forward(X[it])
 
                 # backward pass
-                loss[i], delta = CrossEntropy().criterion_CrossEntropy(y[i], y_hat)
+                loss[it], delta = CrossEntropy().criterion_CrossEntropy(y[it], y_hat)
                 self.backward(delta)
 
                 # update
@@ -254,8 +257,8 @@ test_data = np.load("./Assignment1-Dataset/test_data.npy")
 
 n_class = np.unique(train_label).shape[0]
 n_features = train_data.shape[1]
-nn = MLP([n_features, 128, 128, n_class],
-             [None, 'relu', 'relu', 'relu'])
+nn = MLP([n_features, 64, 32, n_class],
+             [None, 'relu', 'relu', None])
 
 input_data = train_data
 # input_data -= np.mean(input_data, axis=0)  # Mean subtraction

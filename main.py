@@ -10,14 +10,12 @@ test_data = np.load("./Assignment1-Dataset/test_data.npy")
 
 n_class = np.unique(train_label).shape[0]
 n_features = train_data.shape[1]
-nn = mlp.MLP([n_features, 128, 128, n_class],
-             [None, 'relu', 'relu',  'relu'],
+nn = mlp.MLP([n_features, 64, 32, n_class],
+             [None, 'relu', 'relu',  None],
              dropout=0,
              bn=False)
 
 input_data = train_data
-input_data -= np.mean(input_data, axis=0)  # Mean subtraction
-input_data /= np.std(input_data, axis=0)  # Scaling
 output_data = train_label
 
 model = nn.fit(input_data,

@@ -19,6 +19,7 @@ class MLP:
             self.layers.append(nn.Linear(n_in=n_neurons[i],
                                          n_out=n_neurons[i + 1],
                                          activation=self.activation[i+1],
+                                         activation_last_layer=self.activation[i],
                                          layer_index=i,
                                          bn=self.bn,
                                          dropout=self.dropout,

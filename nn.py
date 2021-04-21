@@ -3,7 +3,7 @@ import util
 
 
 class Linear(object):
-    def __init__(self, n_in, n_out, layer_index, activation=None, bn=True, dropout=0.2,
+    def __init__(self, n_in, n_out, layer_index, activation=None, activation_last_layer = None, bn=True, dropout=0.2,
                  output_layer=False):
         self.isOutputLayer = output_layer
         self.name = "Hidden layer " + str(layer_index + 1) if not self.isOutputLayer else "Output layer"
@@ -11,6 +11,7 @@ class Linear(object):
         self.n_in = n_in  # number of neurons in current layer
         self.n_out = n_out  # number of neurons in next layer
         self.activation_name = activation
+        self.activation_last_layer = activation_last_layer,
         self.bn = bn
         self.dropout = dropout
 
@@ -53,6 +54,8 @@ class Linear(object):
     def forward(self, input, mode):
         # print("==" * 50)
         # print("{} forward propagation".format(self.name))
+        # print("this layer has {} neurons".format(self.n_out))
+
         self.mode = mode
         self.input_batch_size = input.shape[0]
         self.input = input
@@ -69,6 +72,13 @@ class Linear(object):
     def backward(self, delta):
         # print("=="*50)
         # print("{} back propagation".format(self.name))
+        # print("this layer has {} neurons".format(self.n_out))
+
+        if not self.isOutputLayer:
+            delta = self.activation_backward(delta) # d_dropout
+            delta = self.dropout_backward(delta) # d_bn
+            delta = self.bn_backward(delta)
+
         # calculate grad
         grad_W_all = []
         for i in range(self.input_batch_size):
@@ -78,23 +88,9 @@ class Linear(object):
         self.grad_W = np.mean(grad_W_all, axis=0)
         self.grad_b = np.mean(delta, axis=0)
 
-        if self.isOutputLayer:
-            delta = self.activation_backward(delta)
-            delta = delta.dot(self.W.T)
-        else:
-            # activation layer backward
-            delta = self.activation_backward(delta)
-            delta = self.dropout_backward(delta)
-            delta = self.bn_backward(delta)
-            delta = delta.dot(self.W.T)
-
-
-        # # activation layer backward
-        # delta = self.activation_backward(delta)
-        # delta = delta.dot(self.W.T)
-        # delta = self.dropout_backward(delta)
-        # delta = self.bn_backward(delta)
+        delta = delta.dot(self.W.T)  # d_activation
         return delta
+
 
     """
     batch normalization functions
@@ -177,9 +173,9 @@ class Linear(object):
         if self.activation_name == 'tanh':
             return delta
         elif self.activation_name == 'relu':
-            return delta * np.where(self.activation_output > 0, 1, 0)
+            return delta * np.where(self.dropout_output >= 0, 1, 0)
         elif self.activation_name == 'leaky_relu':
-            return delta * np.where(self.activation_output >= 0, 1, 0.01)
+            return delta * np.where(self.dropout_output >= 0, 1, 0.01)
         else:
             return delta
 
