@@ -1,8 +1,5 @@
 import numpy as np
 import mlp
-import pickle
-import util
-
 
 np.random.seed(5329)
 
@@ -13,10 +10,10 @@ test_data = np.load("./Assignment1-Dataset/test_data.npy")
 
 n_class = np.unique(train_label).shape[0]
 n_features = train_data.shape[1]
-nn = mlp.MLP([n_features, 128, 128, n_class],
-             [None, 'relu', 'relu',  None],
+nn = mlp.MLP([n_features, 256, n_class],
+             [None, 'relu', 'relu', None],
              dropout=0,
-             bn=True)
+             bn=False)
 # Standardisation normalizer
 # standard_transformer = util.Standardisation()
 # data_train = standard_transformer.fit_transform(train_data)
@@ -35,23 +32,35 @@ label_test = test_label
 
 model = nn.fit(data_train,
                label_train,
-               learning_rate=0.001,
-               epochs=2,
-               batch_size=16,
-               train_test_split=0.8,
+               learning_rate=0.01,
+               epochs=3,
+               batch_size=64,
                data_val=data_test,
-               label_val=label_test)
+               label_val=label_test,
+               momentum=0.9,
+               weight_decay=0)
 
+
+
+# modules for evaluation
+from sklearn import metrics
+import seaborn as sn
+import pandas as pd
+import matplotlib.pyplot as plt
 model.eval()
-accuracy = model.accuracy(test_label, model.forward(test_data))
-print("**" * 50)
-print("Training acc of Test data: {}".format(accuracy))
+y_pred = model.predict(data_test)
+fpr, tpr, thresholds = metrics.roc_curve(label_test, y_pred, pos_label=2)
+auc = metrics.auc(fpr, tpr)
+f1_score = metrics.f1_score(label_test, y_pred, average='macro')
+acc = metrics.accuracy_score(label_test, y_pred)
 
-# with open('/Users/dylantao/Documents/PycharmProject/MLP/dist/1619015014.591005/#dropout=0#batch_size=16#lr=0.001#bn=False#epoch_4#val_acc=0.5394.pkl', 'rb') as input:
-#     model = pickle.load(input)
-#     model = nn.fit(data_train,
-#                    label_train,
-#                    learning_rate=0.001,
-#                    epochs=30,
-#                    batch_size=16,
-#                    train_test_split=0.8)
+print("Model AUC: {}".format(auc))
+print("Model F1 socre: {}".format(f1_score))
+print("Model Accuracy socre: {}".format(acc))
+
+cm = metrics.confusion_matrix(label_test, y_pred)
+df_cm = pd.DataFrame(cm, index=[i for i in range(10)],
+                     columns=[i for i in range(10)])
+plt.figure(figsize=(10, 10))
+sn.heatmap(df_cm, annot=True)
+plt.show()

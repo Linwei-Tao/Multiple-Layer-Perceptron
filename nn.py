@@ -165,7 +165,7 @@ class Linear(object):
 
     def activation_forward(self, input):
         if self.activation_name == 'tanh':
-            return input
+            return np.tanh(input)
         elif self.activation_name == 'relu':
             return np.maximum(0, input)
         elif self.activation_name == 'leaky_relu':
@@ -175,7 +175,7 @@ class Linear(object):
 
     def activation_backward(self, delta):
         if self.activation_name == 'tanh':
-            return delta
+            return delta * (1 - np.square(self.activation_output))
         elif self.activation_name == 'relu':
             return delta * np.where(self.dropout_output >= 0, 1, 0)
         elif self.activation_name == 'leaky_relu':
